@@ -17,6 +17,7 @@ final ErrorCallback _defaultOnError = (BuildContext context, Object error) {
 typedef Widget ErrorCallback(BuildContext context, Object error);
 
 class QrCamera extends StatefulWidget {
+
   QrCamera({
     Key key,
     @required this.qrCodeCallback,
@@ -25,6 +26,7 @@ class QrCamera extends StatefulWidget {
     WidgetBuilder notStartedBuilder,
     WidgetBuilder offscreenBuilder,
     ErrorCallback onError,
+    this.shouldRestartQRCamera,
     this.formats,
   })  : notStartedBuilder = notStartedBuilder ?? _defaultNotStartedBuilder,
         offscreenBuilder = offscreenBuilder ?? notStartedBuilder ?? _defaultOffscreenBuilder,
@@ -39,9 +41,11 @@ class QrCamera extends StatefulWidget {
   final WidgetBuilder offscreenBuilder;
   final ErrorCallback onError;
   final List<BarcodeFormats> formats;
+  bool shouldRestartQRCamera;
 
   @override
   QrCameraState createState() => new QrCameraState();
+
 }
 
 class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
@@ -112,6 +116,12 @@ class QrCameraState extends State<QrCamera> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.shouldRestartQRCamera) {
+      widget.shouldRestartQRCamera = false;
+      restart();
+    }
+
     return new LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       if (_asyncInitOnce == null && onScreen) {
         _asyncInitOnce = _asyncInit(constraints.maxWidth, constraints.maxHeight);
